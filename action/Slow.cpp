@@ -21,7 +21,8 @@ Slow* Slow::create(float duration, float slowDuration)
 
 bool Slow::initWithDuration(float duration, float slowDuration)
 {
-    if(ActionInterval::initWithDuration(duration)) {
+    auto dt = Director::getInstance()->getScheduler()->getTimeScale();
+    if(ActionInterval::initWithDuration(duration * slowDuration * dt)) {
         _totalDuration = duration;
         _slowDuration = slowDuration;
         return true;
@@ -39,12 +40,13 @@ Slow* Slow::clone() const
 
 Slow* Slow::reverse() const
 {
-    return nullptr;
+    return clone();
 }
 
 void Slow::startWithTarget(cocos2d::Node *target)
 {
     ActionInterval::startWithTarget(target);
+    _originDuration = _target->getScheduler()->getTimeScale();
 }
 
 void Slow::update(float time)
@@ -54,7 +56,8 @@ void Slow::update(float time)
 
 void Slow::stop()
 {
-    _target->getScheduler()->setTimeScale(1.0);
+    _target->getScheduler()->setTimeScale(_originDuration);
+    _target = nullptr;
     ActionInterval::stop();
 }
 

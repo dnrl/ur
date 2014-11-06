@@ -32,6 +32,7 @@ public:
 protected:
     float           _slowDuration;
     float           _totalDuration;
+    float           _originDuration;
 };
 }}
 

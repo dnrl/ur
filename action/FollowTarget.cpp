@@ -60,7 +60,7 @@ FollowTarget* FollowTarget::clone() const
 
 FollowTarget* FollowTarget::reverse() const
 {
-    return nullptr;
+    return clone();
 }
 
 void FollowTarget::step(float time)
