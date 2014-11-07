@@ -13,7 +13,11 @@
 #define calc(per)                   calculate(per)
 
 inline bool calculate(float percent) {
-    if ( !(arc4random()%(int)(100.0f / percent)) )  return true;
+    /*  0% ~ 100%  */
+    if ( percent <= 0.0f )                              return false;
+    else if ( percent >= 100.0f )                       return true;
+    else if ( !(arc4random()%(int)(100.0f / percent)))  return true;
+    
     return false;
 };
 
