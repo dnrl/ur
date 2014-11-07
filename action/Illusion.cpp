@@ -20,10 +20,10 @@ Illusion::~Illusion()
 
 Illusion* Illusion::create(float duration, int count, float opacity)
 {
-    auto slow = new Illusion();
-    slow->initWithDuration(duration, count, opacity);
-    slow->autorelease();
-    return slow;
+    auto illusion = new Illusion();
+    illusion->initWithDuration(duration, count, opacity);
+    illusion->autorelease();
+    return illusion;
 }
 
 bool Illusion::initWithDuration(float duration, int count, float opacity)
@@ -68,7 +68,6 @@ void Illusion::update(float time)
 
 void Illusion::stop()
 {
-    _time = 0.0f;
     _target = nullptr;
     ActionInterval::stop();
 }
@@ -96,7 +95,7 @@ void Illusion::addSprite()
     ret->setPosition(Vec2(_target->getBoundingBox().getMidX(), _target->getBoundingBox().getMidY()));
     ret->setFlippedY(true);
     ret->setOpacity(_opacity);
-    _target->getParent()->addChild(ret, -1);
+    _target->getParent()->addChild(ret, _target->getLocalZOrder()-1);
     
     ret->runAction(Sequence::create(DelayTime::create(0.3f),
                                     FadeTo::create(0.3f, 0),
