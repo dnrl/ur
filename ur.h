@@ -12,6 +12,7 @@
 #include "action/FollowTarget.h"
 #include "action/Flee.h"
 #include "action/Slow.h"
+#include "action/Illusion.h"
 
 //WebView
 #include "WebView/WebView.h"
