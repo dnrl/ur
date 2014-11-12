@@ -12,6 +12,8 @@
 
 #define calc(per)                   calculate(per)
 
+#include <cocos2d.h>
+
 inline bool calculate(float percent) {
     /*  0% ~ 100%  */
     if ( percent <= 0.0f )                              return false;

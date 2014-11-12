@@ -1,6 +1,5 @@
 //
 //  FollowTarget.cpp
-//  DragonVillage3
 //
 //  Created by 조 중욱 on 2014. 11. 6..
 //
@@ -18,26 +17,32 @@ const double DecelerationTweaker = 0.15;
 FollowTarget::FollowTarget():
 _toTarget(nullptr),
 _isRotate(false),
+_isBounding(false),
 _maxSpeed(0.0f),
 _vLook(Vec2::ZERO),
-_vVelocity(Vec2::ZERO)
+_vVelocity(Vec2::ZERO),
+_onArriveCallback(nullptr)
 {
 }
 
 FollowTarget::~FollowTarget()
 {
-    CC_SAFE_RELEASE_NULL(_toTarget);
 }
 
 FollowTarget* FollowTarget::create(cocos2d::Node* target, float maxSpeed, bool isRotation, Deceleration deceleration)
 {
+    return create(target, maxSpeed, isRotation, deceleration, false, nullptr);
+}
+    
+FollowTarget* FollowTarget::create(cocos2d::Node* target, float maxSpeed, bool isRotation, Deceleration deceleration, bool isBounding, arriveCallback onArrive)
+{
     auto ret = new FollowTarget();
-    ret->initWithTarget(target, maxSpeed, isRotation, deceleration);
+    ret->initWithTarget(target, maxSpeed, isRotation, deceleration, isBounding, onArrive);
     ret->autorelease();
     return ret;
 }
 
-bool FollowTarget::initWithTarget(cocos2d::Node* target, float maxSpeed, bool isRotation, Deceleration deceleration)
+bool FollowTarget::initWithTarget(cocos2d::Node* target, float maxSpeed, bool isRotation, Deceleration deceleration, bool isBounding, arriveCallback onArrive)
 {
     target->retain();
     _toTarget = target;
@@ -47,15 +52,16 @@ bool FollowTarget::initWithTarget(cocos2d::Node* target, float maxSpeed, bool is
     
     _deceleration = deceleration;
     
+    _onArriveCallback = onArrive;
+    
+    _isBounding = isBounding;
+    
     return true;
 }
 
 FollowTarget* FollowTarget::clone() const
 {
-    auto ret = new FollowTarget();
-    ret->initWithTarget(_toTarget, _maxSpeed, _isRotate, _deceleration);
-    ret->autorelease();
-    return ret;
+    return create(_toTarget, _maxSpeed, _isRotate, _deceleration, _isBounding, _onArriveCallback);
 }
 
 FollowTarget* FollowTarget::reverse() const
@@ -71,13 +77,27 @@ void FollowTarget::step(float time)
         Vec2 toTarget = _toTarget->getPosition() - _target->getPosition();
         
         double dist = toTarget.getLength();
+        
+        if(_isBounding) {
+            if(_target->getBoundingBox().intersectsRect(_toTarget->getBoundingBox())) {
+                dist = 0;
+                if(_onArriveCallback)
+                    _onArriveCallback();
+                
+                return;
+            }
+        }
+        
         if(dist > 0) {
             float speed = dist / ((float)_deceleration * DecelerationTweaker);
-            
             speed = std::min(speed, _maxSpeed);
             
             Vec2 DesiredVelocity = toTarget * speed / dist;
             vArrive = (DesiredVelocity - _vVelocity);
+        }
+        else {
+            if(_onArriveCallback)
+                _onArriveCallback();
         }
         
         _vVelocity += vArrive;

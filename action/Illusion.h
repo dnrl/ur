@@ -10,17 +10,15 @@
 #define __DragonVillage3__Illusion__
 
 #include <cocos2d.h>
-
-NS_CC_BEGIN
-
+namespace ur { namespace action {
 class Illusion :
 public cocos2d::ActionInterval
 {
 public:
-	Illusion(void);
-	virtual ~Illusion(void);
+    Illusion(void) {}
+    virtual ~Illusion(void) {}
     
-    static Illusion* create(float duration, int count, float opacity = 200.0f);
+    static Illusion* create(float duration, int count, float opacity = 150.0f);
     
     virtual Illusion* clone() const override;
     virtual Illusion* reverse() const override;
@@ -36,10 +34,9 @@ protected:
     float           _count;
     float           _opacity;
     
-    void addSprite();
+    void createAfterImage();
 	
 };
-
-NS_CC_END
+}}
 
 #endif

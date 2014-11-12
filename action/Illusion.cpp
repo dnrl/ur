@@ -9,15 +9,7 @@
 #include "Illusion.h"
 
 USING_NS_CC;
-
-Illusion::Illusion()
-{
-}
-
-Illusion::~Illusion()
-{
-}
-
+namespace ur { namespace action {
 Illusion* Illusion::create(float duration, int count, float opacity)
 {
     auto illusion = new Illusion();
@@ -61,7 +53,7 @@ void Illusion::update(float time)
         
         if(_time < time) {
             _time += slice;
-            addSprite();
+            createAfterImage();
         }
     }
 }
@@ -72,22 +64,25 @@ void Illusion::stop()
     ActionInterval::stop();
 }
 
-
-void Illusion::addSprite()
+void Illusion::createAfterImage()
 {
     Size size = Director::getInstance()->getWinSize();
     Size pixelSize = Director::getInstance()->getWinSizeInPixels();
     
     auto originPos = _target->getBoundingBox().origin;
     
-    auto rt = RenderTexture::create(_target->getBoundingBox().size.width ,
-                                    _target->getBoundingBox().size.height,
-                                    Texture2D::PixelFormat::RGBA8888);
+    float width = _target->getBoundingBox().size.width;
+    float height = _target->getBoundingBox().size.height;
+    
+    auto rt = RenderTexture::create(width, height);
+    
     rt->setKeepMatrix(true);
-    rt->setVirtualViewport(Vec2(originPos.x, originPos.y),
+    rt->setVirtualViewport(Vec2(_target->getParent()->getBoundingBox().origin.x + originPos.x,
+                                _target->getParent()->getBoundingBox().origin.y + originPos.y),
                            Rect(0, 0, size.width, size.height),
                            Rect(0, 0, pixelSize.width, pixelSize.height));
-    rt->begin();
+//    rt->begin();
+    rt->beginWithClear(1, 0, 0, 1);
     _target->visit();
     rt->end();
     
@@ -102,3 +97,4 @@ void Illusion::addSprite()
                                     RemoveSelf::create(),
                                     NULL));
 }
+}}
