@@ -8,6 +8,8 @@
 #ifndef __utils__WebView__
 #define __utils__WebView__
 
+#include <cocos2d.h>
+
 namespace ur { namespace utils {
 
 class WebView;
