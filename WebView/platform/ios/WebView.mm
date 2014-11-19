@@ -7,7 +7,7 @@
 
 #include <cocos2d.h>
 #import "../../WebView.h"
-#import "CCEAGLView.h"
+#import "platform/ios/CCEAGLView-ios.h"
 
 @interface ViewDelegate : NSObject<UIWebViewDelegate>
 {

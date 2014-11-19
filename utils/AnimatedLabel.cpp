@@ -9,12 +9,14 @@
 #include "AnimatedLabel.h"
 
 USING_NS_CC;
-using namespace ur::util;
+
+namespace ur { namespace utils {
 
 AnimatedLabel::AnimatedLabel(TextHAlignment halignment, TextVAlignment valignment):
 Label(nullptr, halignment, valignment),
 _onAnimationEnded(nullptr),
-_speed(0.025)
+_speed(0.025),
+_isShowAllText(false)
 {
 }
 AnimatedLabel::~AnimatedLabel()
@@ -29,9 +31,8 @@ AnimatedLabel* AnimatedLabel::create(const TTFConfig& ttfConfig, const std::stri
     {
         ret->autorelease();
         ret->initText();
+        ret->setDimensions(size.width, size.height);
         ret->setText(text);
-        ret->setWidth(size.width);
-        ret->setHeight(size.height);
         
         return ret;
     }
@@ -48,79 +49,104 @@ void AnimatedLabel::play(CallBack onAnimationEnded)
 {
     _onAnimationEnded = onAnimationEnded;
     _isPlaying = true;
-    scheduleUpdate();
+    
+    for(auto i = 0; i < getStringLength(); ++i) {
+        auto label = getLetter(i);
+        
+        if(label) {
+            cocos2d::Vector<FiniteTimeAction*>  actions;
+            
+            actions.pushBack(DelayTime::create(_speed*i));
+            actions.pushBack(Show::create());
+            
+            if(i == getStringLength()-1 && _onAnimationEnded != nullptr) {
+                actions.pushBack(CallFunc::create([=](){
+                    _onAnimationEnded(this);
+                }));
+            }
+            
+            label->runAction(Sequence::create(actions));
+        }
+    }
 }
 void AnimatedLabel::stop()
 {
-    unscheduleUpdate();
     _isPlaying = false;
+    
+    for(auto i = 0; i < getStringLength(); ++i) {
+        auto label = getLetter(i);
+        if(label)
+            label->stopAllActions();
+    }
 }
 
 void AnimatedLabel::initText()
 {
-    _text = "";
-    _tick = _speed;
-    _maxWidth = 10;
-    _currentPos = 0;
+    _fullText = "";
     _isPlaying = false;
 }
 
 void AnimatedLabel::setText(const std::string& text)
 {
-    _text = "";
-    _fullText = text;
-    _currentPos = 0;
+//    _fullText = text;
+
+    setString(text);
     
-    setString(_text);
+    std::string tmp = _originalUTF8String;
+    int i = 0;
+    while (!tmp.empty()) {
+        auto letter = getLetter(i);
+        if(!letter) {
+            _textQueue.push(tmp.substr(0, i));
+            tmp = tmp.substr(i, tmp.length());
+            log("%s", tmp.c_str());
+            i = 0;
+            removeAllChildren();
+            setString(tmp);
+        }
+        else {
+            i++;
+        }
+    }
+    
+    _textQueue.push(text);
+    
+    _isShowAllText = false;
+    
+    _fullText = _textQueue.front();
+    setString(_fullText);
+    _textQueue.pop();
+    
+    for(auto i = 0; i < getStringLength(); ++i) {
+        auto label = getLetter(i);
+        if(label)
+            label->setVisible(false);
+    }
 }
 
 void AnimatedLabel::showAllText()
 {
     if(_isPlaying) stop();
     
-    setString(_fullText);
+    _isShowAllText = true;
+    
+    for(auto i = 0; i < getStringLength(); ++i) {
+        auto label = getLetter(i);
+        if(label)
+            label->setVisible(true);
+    }
+    
+    if(_onAnimationEnded)
+        _onAnimationEnded(this);
 }
 
 
 void AnimatedLabel::clear()
 {
     stop();
-    _text = "";
-    setString(_text);
+    _fullText = "";
+    setString("");
 }
 
-void AnimatedLabel::appendString()
-{
-    if(_currentPos >= _fullText.length()) {
-        stop();
-        
-        if(_onAnimationEnded)
-            _onAnimationEnded();
-        
-        return;
-    }
-    
-    
-    if(_currNumLines * getLineHeight() > _labelHeight) {
-        _text = "";
-        stop();
-        return;
-    }
-    std::string tmp = _fullText.substr(_currentPos++, 1);
-    _text.append(tmp);
-    
-    log("%s : %d, %f", tmp.c_str(), _currNumLines, getLineHeight());
-    setString(_text);
-    log("%s : %d", tmp.c_str(), _currNumLines);
-}
-
-void AnimatedLabel::update(float dt)
-{
-    _tick -= dt;
-    if(_tick < 0) {
-        _tick = _speed;
-        appendString();
-    }
-}
-
+}}
 

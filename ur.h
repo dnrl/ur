@@ -14,6 +14,9 @@
 #include "action/Slow.h"
 #include "action/Illusion.h"
 
+//Util
+#include "utils/AnimatedLabel.h"
+
 //WebView
 #include "WebView/WebView.h"
 

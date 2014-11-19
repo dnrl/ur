@@ -11,41 +11,30 @@
 
 #include <cocos2d.h>
 
-NS_CC_BEGIN
-
-namespace ur {
-namespace util {
+namespace ur { namespace utils {
 class AnimatedLabel:
-public Label
+public cocos2d::Label
 {
 public:
-    AnimatedLabel(TextHAlignment halignment, TextVAlignment valignment);
+    AnimatedLabel(cocos2d::TextHAlignment halignment, cocos2d::TextVAlignment valignment);
     ~AnimatedLabel(void);
     
-    static AnimatedLabel* create(const TTFConfig& ttfConfig, const std::string& text, const Size& size, TextHAlignment halignment, TextVAlignment valignment);
+    static AnimatedLabel* create(const cocos2d::TTFConfig& ttfConfig, const std::string& text, const cocos2d::Size& size, cocos2d::TextHAlignment halignment, cocos2d::TextVAlignment valignment);
     
     void initText();
     
-    virtual void update(float dt);
-    
-    using CallBack = std::function<void(void)>;
+    using CallBack = std::function<void(void*)>;
     
 private:
-    std::string                 _text;
     std::string                 _fullText;
-    float                       _tick;
-    int                         _maxWidth;
-    int                         _currentPos;
+    std::queue<std::string>     _textQueue;
     bool                        _isPlaying;
+    bool                        _isShowAllText;
     
     double                      _speed;
     
     /* callback */
     CallBack                    _onAnimationEnded;
-    
-protected:
-    void appendString();
-    
     
 public:
     ///자간 속도
@@ -61,17 +50,15 @@ public:
     void clear();
     
     ///애니메이션 실행
-    void play(CallBack onAnimationEnded = nullptr);
+    void play(CallBack onAnimationEnded);
     
     ///애니메이션 정지
     void stop();
     
     ///현제 애니메이션중인지 검사
     bool isPlaying() const { return _isPlaying; }
+    bool isShowAllText() const { return _isShowAllText; }
 };
-}
-}
-
-NS_CC_END
+}}
 
 #endif /* defined(__util__AnimatedLabel__) */
