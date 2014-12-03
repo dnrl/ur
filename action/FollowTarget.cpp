@@ -12,7 +12,7 @@ USING_NS_CC;
 namespace ur { namespace action {
 
 ///감속 (낮을수록 빠름)
-const double DecelerationTweaker = 0.15;
+const double DecelerationTweaker = 0.35;
 
 FollowTarget::FollowTarget():
 _toTarget(nullptr),

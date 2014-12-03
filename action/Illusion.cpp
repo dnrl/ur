@@ -69,31 +69,32 @@ void Illusion::createAfterImage()
     Size size = Director::getInstance()->getWinSize();
     Size pixelSize = Director::getInstance()->getWinSizeInPixels();
     
-    auto originPos = _target->getBoundingBox().origin;
+    Vec2 rtBegin = _target->getBoundingBox().origin;
+    Rect fullRect = Rect(0, 0, size.width, size.height);
+    Rect fullViewport = Rect(0, 0, pixelSize.width, pixelSize.height);
+    
+    rtBegin = _target->getParent()->convertToWorldSpace(rtBegin);
     
     float width = _target->getBoundingBox().size.width;
     float height = _target->getBoundingBox().size.height;
     
-    auto rt = RenderTexture::create(width, height);
-    
+    auto rt = RenderTexture::create(width, height, Texture2D::PixelFormat::RGBA8888);
     rt->setKeepMatrix(true);
-    rt->setVirtualViewport(Vec2(_target->getParent()->getBoundingBox().origin.x + originPos.x,
-                                _target->getParent()->getBoundingBox().origin.y + originPos.y),
-                           Rect(0, 0, size.width, size.height),
-                           Rect(0, 0, pixelSize.width, pixelSize.height));
-//    rt->begin();
-    rt->beginWithClear(1, 0, 0, 1);
+    rt->setVirtualViewport(rtBegin - Vec2(width/2, 0), fullRect, fullViewport);
+    rt->begin();
+//    rt->beginWithClear(1, 0, 0, 1);
     _target->visit();
     rt->end();
     
     auto ret = Sprite::createWithTexture(rt->getSprite()->getTexture());
-    ret->setPosition(Vec2(_target->getBoundingBox().getMidX(), _target->getBoundingBox().getMidY()));
+    ret->setPosition(Vec2(_target->getBoundingBox().getMidX() - width/2, _target->getBoundingBox().getMidY()));
     ret->setFlippedY(true);
     ret->setOpacity(_opacity);
+    ret->setColor(Color3B::BLUE);
     _target->getParent()->addChild(ret, _target->getLocalZOrder()-1);
     
-    ret->runAction(Sequence::create(DelayTime::create(0.3f),
-                                    FadeTo::create(0.3f, 0),
+    ret->runAction(Sequence::create(DelayTime::create(0.5f),
+                                    FadeTo::create(0.5f, 0),
                                     RemoveSelf::create(),
                                     NULL));
 }

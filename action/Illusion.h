@@ -18,13 +18,15 @@ public:
     Illusion(void) {}
     virtual ~Illusion(void) {}
     
-    static Illusion* create(float duration, int count, float opacity = 150.0f);
+    static Illusion* create(float duration, int count, float opacity = 100.0f);
     
     virtual Illusion* clone() const override;
     virtual Illusion* reverse() const override;
     virtual void startWithTarget(cocos2d::Node *target) override;
     virtual void update(float time) override;
     virtual void stop() override;
+    
+    virtual void createAfterImage();
     
     bool initWithDuration(float duration, int count, float opacity);
 	
@@ -34,7 +36,7 @@ protected:
     float           _count;
     float           _opacity;
     
-    void createAfterImage();
+    
 	
 };
 }}
