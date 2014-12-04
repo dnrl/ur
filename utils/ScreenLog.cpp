@@ -6,6 +6,7 @@
 //
 
 #include "ScreenLog.h"
+#include "VisibleRect.h"
 
 USING_NS_CC;
 using namespace std;
@@ -194,7 +195,7 @@ void screenLogMessage::createLabel()
         default:                                _label->setColor(Color3B(255,  32,  32)); break; // red
     }
     
-    _label->setPosition(Vec2(2, SCREENLOG_START_HEIGHT_PERCENT * screenHeightPixels));
+    _label->setPosition(Vec2(VisibleRect::left().x + 2, SCREENLOG_START_HEIGHT_PERCENT * screenHeightPixels));
     _logLayer->addChild(_label);
 }
 
