@@ -13,7 +13,7 @@ namespace ur { namespace action {
 
 NumberFromTo* NumberFromTo::create(float duration, float from, float to, const std::string& format)
 {
-    auto fromTo = new NumberFromTo();
+    auto fromTo = new (std::nothrow) NumberFromTo();
     fromTo->initWithDuration(duration, from, to, format);
     fromTo->autorelease();
     return fromTo;
@@ -32,7 +32,7 @@ bool NumberFromTo::initWithDuration(float duration, float from, float to, const 
 
 NumberFromTo* NumberFromTo::clone() const
 {
-    auto a = new NumberFromTo();
+    auto a = new(std::nothrow) NumberFromTo();
     a->initWithDuration(_duration, _from, _to, _format);
     a->autorelease();
     return a;

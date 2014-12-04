@@ -13,7 +13,7 @@ namespace ur { namespace action {
 
 Slow* Slow::create(float duration, float slowDuration)
 {
-    auto slow = new Slow();
+    auto slow = new (std::nothrow) Slow();
     slow->initWithDuration(duration, slowDuration);
     slow->autorelease();
     return slow;
@@ -32,10 +32,7 @@ bool Slow::initWithDuration(float duration, float slowDuration)
 
 Slow* Slow::clone() const
 {
-    auto slow = new Slow();
-    slow->initWithDuration(_totalDuration, _slowDuration);
-    slow->autorelease();
-    return slow;
+    return create(_totalDuration, _slowDuration);
 }
 
 Slow* Slow::reverse() const

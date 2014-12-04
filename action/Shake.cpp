@@ -18,7 +18,7 @@ Shake* Shake::create(float duration, float strength)
 
 Shake* Shake::create(float duration, float strength_x, float strength_y)
 {
-    auto shake = new Shake();
+    auto shake = new(std::nothrow) Shake();
     shake->initWithDuration(duration, strength_x, strength_y);
     shake->autorelease();
     return shake;
@@ -37,10 +37,7 @@ bool Shake::initWithDuration(float duration, float strength_x, float strength_y)
 
 Shake* Shake::clone(void) const
 {
-    auto a = new Shake();
-    a->initWithDuration(_duration, _strength_x, _strength_y);
-    a->autorelease();
-    return a;
+    return create(_duration, _strength_x, _strength_y);
 }
 
 Shake* Shake::reverse() const

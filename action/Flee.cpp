@@ -21,7 +21,7 @@ Flee::~Flee()
 
 Flee* Flee::create(cocos2d::Node* target, float maxSpeed, float radius, bool isRotation)
 {
-    auto ret = new Flee();
+    auto ret = new (std::nothrow) Flee();
     ret->initWithTarget(target, maxSpeed, radius, isRotation);
     ret->autorelease();
     return ret;
@@ -39,10 +39,7 @@ bool Flee::initWithTarget(cocos2d::Node* target, float maxSpeed, float radius, b
 
 Flee* Flee::clone() const
 {
-    auto ret = new Flee();
-    ret->initWithTarget(_toTarget, _maxSpeed, _radius, _isRotate);
-    ret->autorelease();
-    return ret;
+    return create(_target, _maxSpeed, _radius, _isRotate);
 }
 
 Flee* Flee::reverse() const

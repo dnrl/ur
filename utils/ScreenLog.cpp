@@ -85,7 +85,7 @@ screenLogMessage* ScreenLog::log(ScreenLogMessageType type, const char *p_str, .
     vsnprintf(g_screenLogPrintBuffer, SCREENLOG_PRINT_BUFFER_SIZE - 1, p_str, t_va);
     va_end (t_va);
     
-    screenLogMessage *slm = new screenLogMessage(this);
+    screenLogMessage *slm = new(std::nothrow) screenLogMessage(this);
     slm->_type = type;
     slm->_text = g_screenLogPrintBuffer;
     slm->_timestamp = getTimeMillis();

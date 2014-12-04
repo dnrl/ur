@@ -25,7 +25,7 @@ AnimatedLabel::~AnimatedLabel()
 
 AnimatedLabel* AnimatedLabel::create(const TTFConfig& ttfConfig, const std::string& text, const Size& size, TextHAlignment halignment, TextVAlignment valignment)
 {
-    auto ret = new AnimatedLabel(halignment, valignment);
+    auto ret = new(std::nothrow) AnimatedLabel(halignment, valignment);
     
     if (ret && FileUtils::getInstance()->isFileExist(ttfConfig.fontFilePath) && ret->setTTFConfig(ttfConfig))
     {

@@ -95,7 +95,7 @@ WebView* WebView::create(const cocos2d::Size& size)
     uiView.hidden = YES;
     [view addSubview:uiView];
     
-    webview = new WebView((void*)uiView);
+    webview = new (std::nothrow) WebView((void*)uiView);
     uiView.delegate = (id<UIWebViewDelegate>)[[ViewDelegate alloc] initWithDelegate:(void *)webview];
     return webview;
 }

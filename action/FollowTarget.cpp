@@ -36,7 +36,7 @@ FollowTarget* FollowTarget::create(cocos2d::Node* target, float maxSpeed, bool i
     
 FollowTarget* FollowTarget::create(cocos2d::Node* target, float maxSpeed, bool isRotation, Deceleration deceleration, bool isBounding, arriveCallback onArrive)
 {
-    auto ret = new FollowTarget();
+    auto ret = new (std::nothrow) FollowTarget();
     ret->initWithTarget(target, maxSpeed, isRotation, deceleration, isBounding, onArrive);
     ret->autorelease();
     return ret;

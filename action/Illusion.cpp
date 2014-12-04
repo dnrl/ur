@@ -12,7 +12,7 @@ USING_NS_CC;
 namespace ur { namespace action {
 Illusion* Illusion::create(float duration, int count, float opacity)
 {
-    auto illusion = new Illusion();
+    auto illusion = new (std::nothrow) Illusion();
     illusion->initWithDuration(duration, count, opacity);
     illusion->autorelease();
     return illusion;
