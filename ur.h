@@ -13,6 +13,7 @@
 #include "action/Flee.h"
 #include "action/Slow.h"
 #include "action/Illusion.h"
+#include "action/TintBlink.h"
 
 //Util
 #include "utils/AnimatedLabel.h"
