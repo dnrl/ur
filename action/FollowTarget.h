@@ -26,7 +26,7 @@ public:
 	FollowTarget(void);
 	virtual ~FollowTarget(void);
     
-    using arriveCallback = std::function<void(void)>;
+    using arriveCallback = std::function<void(void*)>;
     
     static FollowTarget* create(cocos2d::Node* target, float maxSpeed, bool rotationEnable, Deceleration deceleration);
     

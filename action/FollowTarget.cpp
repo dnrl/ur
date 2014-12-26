@@ -82,7 +82,7 @@ void FollowTarget::step(float time)
             if(_target->getBoundingBox().intersectsRect(_toTarget->getBoundingBox())) {
                 dist = 0;
                 if(_onArriveCallback)
-                    _onArriveCallback();
+                    _onArriveCallback(_target);
                 
                 return;
             }
@@ -97,7 +97,7 @@ void FollowTarget::step(float time)
         }
         else {
             if(_onArriveCallback)
-                _onArriveCallback();
+                _onArriveCallback(_target);
         }
         
         _vVelocity += vArrive;
