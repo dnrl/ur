@@ -10,65 +10,62 @@
 
 USING_NS_CC;
 namespace ur { namespace action {
-TintBlink* TintBlink::create(float duration, cocos2d::Color3B color)
+TintBlink* TintBlink::create(cocos2d::Color3B color)
 {
-    return create(duration, cocos2d::Color3B::WHITE, color);
+    return create(cocos2d::Color3B::WHITE, color);
 }
 
-TintBlink* TintBlink::create(float duration, cocos2d::Color3B from, cocos2d::Color3B to)
+TintBlink* TintBlink::create(cocos2d::Color3B from, cocos2d::Color3B to)
 {
     auto tint = new (std::nothrow) TintBlink();
-    tint->initWithColor(duration, from, to);
+    tint->initWithColor(from, to);
     tint->autorelease();
     return tint;
 }
 
-bool TintBlink::initWithColor(float duration, cocos2d::Color3B from, cocos2d::Color3B to)
+bool TintBlink::initWithColor(cocos2d::Color3B from, cocos2d::Color3B to)
 {
-    if ( ActionInterval::initWithDuration(duration) )
-    {
-        _fromColor = from;
-        _toColor = to;
-        
-        return true;
-    }
-    return false;
+    _fromColor = from;
+    _toColor = to;
+    _isChange = false;
+    _tick = 0.0f;
+    
+    return true;
 }
 
 TintBlink* TintBlink::clone(void) const
 {
-    return create(_duration, _fromColor, _toColor);
+    return create(_fromColor, _toColor);
 }
 
 TintBlink* TintBlink::reverse() const
 {
-    return create(_duration, _toColor, _fromColor);
+    return create(_toColor, _fromColor);
 }
 
-void TintBlink::update(float time)
+void TintBlink::step(float time)
 {
-    if (_target && ! isDone())
+    if (!isDone())
     {
-        float slice = 1.0f / _duration;
-        float m = fmodf(time, slice);
-        
-        if(m > slice / 2) {
-            _target->setColor(_toColor);
-        }
-        else {
-            _target->setColor(_fromColor);
+        _tick += time;
+        if(_tick > 0.5f) {
+            _tick = 0.0f;
+            _target->setColor((!_isChange) ? _toColor : _fromColor);
+            _isChange = !_isChange;
         }
     }
 }
 
-void TintBlink::stop()
+bool TintBlink::isDone() const
 {
-    _target->setColor(_fromColor);
-    ActionInterval::stop();
+    return (!_target);
 }
 
-void TintBlink::startWithTarget(cocos2d::Node *target)
+void TintBlink::stop()
 {
-    ActionInterval::startWithTarget(target);
+    if(_target)
+        _target->setColor(_fromColor);
+    Action::stop();
 }
+
 }}
