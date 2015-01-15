@@ -14,6 +14,7 @@
 #include "action/Slow.h"
 #include "action/Illusion.h"
 #include "action/TintBlink.h"
+#include "action/SizeTo.h"
 
 //Util
 #include "utils/AnimatedLabel.h"
