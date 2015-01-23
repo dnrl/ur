@@ -22,18 +22,20 @@ public:
 	
     virtual bool initWithFilePath(const std::string& filePath);
     
-    static TouchSprite* create(const std::string& filePath);
-    
     using CallBack = std::function<void(TouchSprite*)>;
-	
-private:
-    CallBack            _touchCallback;
     
+    virtual bool onTouchBegan(Touch* t, Event* e);
+    virtual void onTouchEnded(Touch* t, Event* e);
+    virtual void onTouchMoved(Touch* t, Event* e);
+    virtual void onTouchCancelled(Touch* t, Event* e);
+        
+protected:
+    CallBack            _touchBeginCallback;
+    CallBack            _touchEndCallback;
+    
+    bool                _isTouchEnable;
 public:
-    void addEvent();
-    
-    bool collisionCheck(const Vec2& touchPt);
-	
+    void setTouchEnable(bool e);
 };
 
 NS_CC_END

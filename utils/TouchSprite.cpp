@@ -7,10 +7,15 @@
 //
 
 #include "TouchSprite.h"
+#include "PixelReadNode.h"
+#include "Collision.h"
 
 USING_NS_CC;
 
-TouchSprite::TouchSprite()
+TouchSprite::TouchSprite():
+_touchBeginCallback(nullptr),
+_touchEndCallback(nullptr),
+_isTouchEnable(false)
 {
 }
 
@@ -19,72 +24,75 @@ TouchSprite::~TouchSprite()
     CCLOGINFO("cocos2d: deallocing TouchSprite");
 }
 
-TouchSprite* TouchSprite::create(const std::string& filePath)
-{
-    auto ret = new (std::nothrow) TouchSprite();
-    if(ret && ret->initWithFilePath(filePath)) {
-        ret->autorelease();
-        return ret;
-    }
-    CC_SAFE_DELETE(ret);
-    return nullptr;
-}
-
 bool TouchSprite::initWithFilePath(const std::string& filePath)
 {
     if (!Sprite::initWithFile(filePath)) return false;
     
-    log("asdasd");
     
-    addEvent();
+    auto listener = EventListenerTouchOneByOne::create();
+    listener->setSwallowTouches(false);
+    listener->onTouchBegan = CC_CALLBACK_2(TouchSprite::onTouchBegan, this);
+    listener->onTouchMoved = CC_CALLBACK_2(TouchSprite::onTouchMoved, this);
+    listener->onTouchEnded = CC_CALLBACK_2(TouchSprite::onTouchEnded, this);
+    listener->onTouchCancelled = CC_CALLBACK_2(TouchSprite::onTouchCancelled, this);
+    
+    Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
     
     return true;
 }
 
-
-void TouchSprite::addEvent()
+void TouchSprite::setTouchEnable(bool e)
 {
-    auto listener = EventListenerTouchOneByOne::create();
-    listener->setSwallowTouches(true);
-    listener->onTouchBegan = [=](Touch* t, Event* e)->bool {
-        
-        if(getBoundingBox().containsPoint(t->getLocation())) {
-            
-            if(this->collisionCheck(t->getLocation())) {
-                log("#### touch ####");
+    _isTouchEnable = e;
+}
+
+
+bool TouchSprite::onTouchBegan(Touch* t, Event* e)
+{
+    if(_isTouchEnable) {
+        auto pt = t->getLocation();
+        if(getBoundingBox().containsPoint(pt)) {
+            if(Collision::pixelAtPoint(this, pt) ) {
+                log("#### touch begin ####");
+                
+                if(_touchBeginCallback)
+                    _touchBeginCallback(this);
+                
                 return true;
             }
         }
-        return false;
-    };
+    }
     
-    Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
-    
+    return false;
 }
 
-bool TouchSprite::collisionCheck(const Vec2& touchPt)
+void TouchSprite::onTouchEnded(Touch* t, Event* e)
 {
-    Size size = getContentSize();
-    RenderTexture* rt = RenderTexture::create(size.width, size.height, Texture2D::PixelFormat::RGBA8888);
-    
-    GLubyte* pixel = new GLubyte[4];
-    
-    rt->beginWithClear(1, 0, 0, 1);
-    
-    this->visit();
-    
-    glReadPixels((GLint)touchPt.x, (GLint)touchPt.y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
-    
-    rt->end();
-    
-    log("R : %d, G : %d, B : %d, A : %d" , pixel[0], pixel[1], pixel[2], pixel[3]);
-    bool  isCollision = (pixel[0] == 0);
-    
-    delete[] pixel;
-    return !isCollision;
+    if(_isTouchEnable) {
+        auto pt = t->getLocation();
+        if(getBoundingBox().containsPoint(pt)) {
+            if(Collision::pixelAtPoint(this, pt) ) {
+                log("#### touch end ####");
+                
+                if(_touchEndCallback)
+                    _touchEndCallback(this);
+            }
+        }
+    }
 }
 
+void TouchSprite::onTouchMoved(Touch* t, Event* e)
+{
+    if(_isTouchEnable) {
+    }
+}
 
+void TouchSprite::onTouchCancelled(Touch* t, Event* e)
+{
+    
+    if(_isTouchEnable) {
+    }
+}
 
 
 
