@@ -18,7 +18,7 @@ void GameCenter::init()
 
 void GameCenter::connect(SuccessCallback onConneted, ErrorCallback onError)
 {
-    _onSuccessCallback = onConneted;
+    _onLoginCallback = onConneted;
     _onErrorCallback = onError;
     [[GameCenter_ios getInstance] connect];
 }
@@ -178,8 +178,8 @@ void GameCenter::setDelegate(GameCenterDelegate* delegate)
 #pragma mark - delegate
 void GameCenter::onConnected()
 {
-    if(_onSuccessCallback)
-        _onSuccessCallback();
+    if(_onLoginCallback)
+        _onLoginCallback();
 }
 void GameCenter::onError(const char* error)
 {

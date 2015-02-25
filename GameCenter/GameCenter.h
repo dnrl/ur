@@ -65,6 +65,7 @@ public:
 private:
     ErrorCallback           _onErrorCallback;
     SuccessCallback         _onSuccessCallback;
+    SuccessCallback         _onLoginCallback;
     
 public:
     void connect(SuccessCallback onSuccess = nullptr, ErrorCallback onError = nullptr);
